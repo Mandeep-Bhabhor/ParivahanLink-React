@@ -9,6 +9,10 @@ import Staff from "./pages/Staff";
 import Vehicles from "./pages/Vehicles";
 import AdminLayout from "./Layouts/AdminLayout";
 import VehicleRegistrationForm from "./pages/VehicleRegistrationForm";
+import WarehouseRegistrationForm from "./pages/WarehouseRegistrationForm";
+import Warehouses from "./pages/Warehouses";
+import CustomerRegistrationForm from "./pages/CustomerRegistrationForm";
+import ShipmentRegistrationForm from "./pages/ShipmentRegistrationForm";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,8 +26,16 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="staff" element={<Staff />} />
           <Route path="vehicles" element={<Vehicles />} />
+          <Route path="warehouse" element={<Warehouses />} />
+
           <Route path="/vehicles/add" element={<VehicleRegistrationForm />} />
+          <Route
+            path="/warehouse/register"
+            element={<WarehouseRegistrationForm />}
+          />
         </Route>
+        <Route path="/registeruser" element={<CustomerRegistrationForm />} />
+        <Route path="/shpmentregistrationform" element={<ShipmentRegistrationForm />} />
       </Routes>
     </>
   );

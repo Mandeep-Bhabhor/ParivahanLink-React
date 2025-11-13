@@ -6,7 +6,7 @@ export default function Sidebar({ isOpen, toggle }) {
     { path: "/", label: "Dashboard", icon: "bi-speedometer2" },
     { path: "/staff", label: "Staff", icon: "bi-people" },
     { path: "/vehicles", label: "Vehicles", icon: "bi-truck" },
-    { path: "/warehouses", label: "Warehouses", icon: "bi-building" },
+    { path: "/warehouse", label: "Warehouses", icon: "bi-building" },
     { path: "/shipments", label: "Shipments", icon: "bi-box-seam" },
     { path: "/customers", label: "Customers", icon: "bi-person-circle" },
     { path: "/payments", label: "Payments", icon: "bi-cash-stack" },

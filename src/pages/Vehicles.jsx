@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function Vehicles() {
-  const [vehicles, setVehicles] = useState([]);
+  const [trucks, setTrucks] = useState([]);
+  const [miniTrucks, setMiniTrucks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [formData, setFormData] = useState({
@@ -12,7 +15,7 @@ export default function Vehicles() {
     driver_id: "",
   });
 
-  // Fetch vehicles from API
+  // ✅ Fetch grouped vehicles
   useEffect(() => {
     fetchVehicles();
   }, []);
@@ -20,9 +23,13 @@ export default function Vehicles() {
   const fetchVehicles = async () => {
     try {
       const res = await axios.get("http://abc.parivahanlink.test/api/vehicles");
-      setVehicles(res.data);
+      setTrucks(res.data.trucks || []);
+      setMiniTrucks(res.data.mini_trucks || []);
     } catch (err) {
       console.error("Error fetching vehicles:", err);
+      setError("Failed to fetch vehicle data.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +53,6 @@ export default function Vehicles() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       if (editingVehicle) {
         await axios.put(
@@ -76,64 +82,112 @@ export default function Vehicles() {
   return (
     <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="fw-bold">Vehicles</h4>
+        <h4 className="fw-bold">Vehicle Management</h4>
         <button className="btn btn-primary" onClick={() => openModal()}>
           <i className="bi bi-plus-circle me-2"></i> Add Vehicle
         </button>
       </div>
 
-      {/* Vehicles Table */}
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <table className="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Vehicle Number</th>
-                <th>Type</th>
-                <th>Capacity (kg)</th>
-                <th>Driver</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vehicles.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center text-muted">
-                    No vehicles found
-                  </td>
-                </tr>
-              ) : (
-                vehicles.map((v, index) => (
-                  <tr key={v.id}>
-                    <td>{index + 1}</td>
-                    <td>{v.vehicle_number}</td>
-                    <td className="text-capitalize">{v.type}</td>
-                    <td>{v.capacity}</td>
-                    <td>{v.driver?.name || "—"}</td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-outline-secondary me-2"
-                        onClick={() => openModal(v)}
-                      >
-                        <i className="bi bi-pencil-square"></i>
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => deleteVehicle(v.id)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {loading && <p className="text-muted">Loading vehicles...</p>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Add/Edit Modal */}
+      {!loading && (
+        <>
+          {/* 🚛 Trucks Section */}
+          <section className="mb-4">
+            <h5 className="text-primary border-bottom pb-2 mb-3">
+              <i className="bi bi-truck me-2"></i>Trucks
+            </h5>
+            {trucks.length === 0 ? (
+              <div className="alert alert-warning">No trucks found.</div>
+            ) : (
+              <table className="table table-striped align-middle shadow-sm">
+                <thead className="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Vehicle Number</th>
+                    <th>Capacity (kg)</th>
+                    <th>Driver</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {trucks.map((v, i) => (
+                    <tr key={v.id}>
+                      <td>{i + 1}</td>
+                      <td>{v.vehicle_number}</td>
+                      <td>{v.capacity}</td>
+                      <td>{v.driver?.name || "—"}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-outline-secondary me-2"
+                          onClick={() => openModal(v)}
+                        >
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => deleteVehicle(v.id)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          {/* 🚚 Mini Trucks Section */}
+          <section>
+            <h5 className="text-success border-bottom pb-2 mb-3">
+              <i className="bi bi-truck-flatbed me-2"></i>Mini Trucks
+            </h5>
+            {miniTrucks.length === 0 ? (
+              <div className="alert alert-warning">No mini trucks found.</div>
+            ) : (
+              <table className="table table-striped align-middle shadow-sm">
+                <thead className="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Vehicle Number</th>
+                    <th>Capacity (kg)</th>
+                    <th>Driver</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {miniTrucks.map((v, i) => (
+                    <tr key={v.id}>
+                      <td>{i + 1}</td>
+                      <td>{v.vehicle_number}</td>
+                      <td>{v.capacity}</td>
+                      <td>{v.driver?.name || "—"}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-outline-secondary me-2"
+                          onClick={() => openModal(v)}
+                        >
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => deleteVehicle(v.id)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </>
+      )}
+
+      {/* 🔧 Add/Edit Modal */}
       {showModal && (
         <div
           className="modal fade show d-block"
@@ -222,4 +276,3 @@ export default function Vehicles() {
     </div>
   );
 }
-    
